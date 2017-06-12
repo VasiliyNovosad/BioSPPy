@@ -23,7 +23,7 @@ from . import tools as st
 from .. import plotting, utils
 
 
-def eeg(signal=None, sampling_rate=1000., labels=None, show=True):
+def eeg(signal=None, sampling_rate=1000., labels=None, show=True, bands=[[4, 8], [8, 10], [10, 13], [13, 25], [25, 40]]):
     """Process raw EEG signals and extract relevant signal features using
     default parameters.
 
@@ -37,6 +37,14 @@ def eeg(signal=None, sampling_rate=1000., labels=None, show=True):
         Channel labels.
     show : bool, optional
         If True, show a summary plot.
+    bands : array, optional
+        EEG frequency bands:
+        * Theta: from 4 to 8 Hz,
+        * Lower Alpha: from 8 to 10 Hz,
+        * Higher Alpha: from 10 to 13 Hz,
+        * Beta: from 13 to 25 Hz,
+        * Gamma: from 25 to 40 Hz.
+
 
     Returns
     -------
@@ -107,7 +115,8 @@ def eeg(signal=None, sampling_rate=1000., labels=None, show=True):
     out = get_power_features(signal=filtered,
                              sampling_rate=sampling_rate,
                              size=0.25,
-                             overlap=0.5)
+                             overlap=0.5,
+                             bands=bands)
     ts_feat = out['ts']
     theta = out['theta']
     alpha_low = out['alpha_low']
@@ -182,7 +191,8 @@ def car_reference(signal=None):
 def get_power_features(signal=None,
                        sampling_rate=1000.,
                        size=0.25,
-                       overlap=0.5):
+                       overlap=0.5,
+                       bands=[[4, 8], [8, 10], [10, 13], [13, 25], [25, 40]]):
     """Extract band power features from EEG signals.
 
     Computes the average signal power, with overlapping windows, in typical
@@ -203,6 +213,13 @@ def get_power_features(signal=None,
         Window size (seconds).
     overlap : float, optional
         Window overlap (0 to 1).
+    bands : array, optional
+        EEG frequency bands:
+        * Theta: from 4 to 8 Hz,
+        * Lower Alpha: from 8 to 10 Hz,
+        * Higher Alpha: from 10 to 13 Hz,
+        * Beta: from 13 to 25 Hz,
+        * Gamma: from 25 to 40 Hz.
 
     Returns
     -------
@@ -247,7 +264,6 @@ def get_power_features(signal=None,
         pad = min_pad - size
 
     # frequency bands
-    bands = [[4, 8], [8, 10], [10, 13], [13, 25], [25, 40]]
     nb = len(bands)
 
     # windower
